@@ -1,0 +1,7 @@
+.env
+data/kazi.db
+data/output/
+*.pyc
+__pycache__/
+.venv/
+.playwright/
