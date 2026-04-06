@@ -5,3 +5,5 @@ data/output/
 __pycache__/
 .venv/
 .playwright/
+__pycache__/
+*.pyc

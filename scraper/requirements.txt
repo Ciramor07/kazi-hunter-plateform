@@ -1,0 +1,7 @@
+playwright==1.44.0
+beautifulsoup4==4.12.3
+requests==2.32.3
+python-dotenv==1.0.1
+sqlalchemy==2.0.30
+fake-useragent==1.5.1
+loguru==0.7.2
