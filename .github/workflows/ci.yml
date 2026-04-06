@@ -48,4 +48,3 @@ jobs:
           [ -f dashboard/Dockerfile ] && \
           docker build -t kazi-dashboard:ci ./dashboard || \
           echo "Dockerfile dashboard pas encore créé — skip"
-
