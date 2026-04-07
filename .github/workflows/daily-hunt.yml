@@ -18,15 +18,16 @@ jobs:
         run: mkdir -p /home/ricky/kazi-data
 
       - name: Build scraper
-        run: docker compose build scraper
+        run: docker build -t kazi-scraper ./scraper
 
       - name: Run scraper + scorer
         run: |
-          docker compose run --rm \
-            -e OLLAMA_HOST=http://172.17.0.1:11434 \
+          docker run --rm \
+            --network host \
+            -e OLLAMA_HOST=http://localhost:11434 \
             -e DB_PATH=/kazi-data/kazi.db \
             -v /home/ricky/kazi-data:/kazi-data \
-            scraper python main.py
+            kazi-scraper python main.py
 
       - name: Done
         run: echo "✅ Kazi Hunt terminé !"
