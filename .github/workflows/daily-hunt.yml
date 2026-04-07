@@ -14,8 +14,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Fix permissions
-        run: mkdir -p /home/ricky/kazi-data && sudo chown -R ricky:ricky /home/ricky/kazi-data/
+      - name: Prepare DB folder
+        run: mkdir -p /home/ricky/kazi-data
 
       - name: Build scraper
         run: docker compose build scraper
