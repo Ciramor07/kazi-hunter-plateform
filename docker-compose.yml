@@ -28,7 +28,7 @@ services:
     ports:
       - "8501:8501"
     volumes:
-      - ./data:/app/data
+      - /home/ricky/kazi-data:/app/data
     environment:
       - DB_PATH=/app/data/kazi.db
     restart: unless-stopped
