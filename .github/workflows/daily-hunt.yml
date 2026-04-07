@@ -22,10 +22,11 @@ jobs:
 
       - name: Run scraper + scorer
         run: |
-          cd scraper
-          OLLAMA_HOST=http://localhost:11434 \
-          DB_PATH=/home/ricky/kazi-data/kazi.db \
-          python main.py
+          docker compose run --rm \
+            -e OLLAMA_HOST=http://172.17.0.1:11434 \
+            -e DB_PATH=/kazi-data/kazi.db \
+            -v /home/ricky/kazi-data:/kazi-data \
+            scraper python main.py
 
       - name: Done
         run: echo "✅ Kazi Hunt terminé !"
