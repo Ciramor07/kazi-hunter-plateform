@@ -2,8 +2,8 @@ name: 🎯 Kazi Daily Hunt
 
 on:
   schedule:
-    - cron: '0 7 * * 1-5'  # Lundi-Vendredi à 7h00 UTC (8h Paris)
-  workflow_dispatch:         # Lancement manuel possible
+    - cron: '0 7 * * 1-5'
+  workflow_dispatch:
 
 jobs:
   scrape-and-score:
@@ -14,22 +14,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Fix permissions
+        run: mkdir -p /home/ricky/kazi-data && sudo chown -R ricky:ricky /home/ricky/kazi-data/
+
       - name: Build scraper
         run: docker compose build scraper
 
-      - name: Run scraper
-        run: |
-          docker compose run --rm scraper python main.py
-        env:
-          OLLAMA_HOST: http://localhost:11434
-          DB_PATH: /home/ricky/kazi-hunter/data/kazi.db
-
-      - name: Score offers
+      - name: Run scraper + scorer
         run: |
           cd scraper
           OLLAMA_HOST=http://localhost:11434 \
-          DB_PATH=/home/ricky/kazi-hunter/data/kazi.db \
-          python scorer.py
+          DB_PATH=/home/ricky/kazi-data/kazi.db \
+          python main.py
 
       - name: Done
         run: echo "✅ Kazi Hunt terminé !"
