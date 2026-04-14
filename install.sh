@@ -41,8 +41,7 @@ if command -v docker &> /dev/null; then
 else
     curl -fsSL https://get.docker.com | sh
     sudo usermod -aG docker $USER
-    newgrp docker
-    ok "Docker installé"
+    ok "Docker installé — tu devras peut-être relancer le script"
 fi
 ok "Docker Compose OK"
 
