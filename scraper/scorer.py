@@ -82,6 +82,21 @@ def score_offer(offer: dict) -> tuple[float, str]:
         return 0.0, "Erreur scoring"
 
 
+# vérification expiration
+def is_offer_expired(url: str) -> bool:
+    try:
+        response = requests.get(url, timeout=10)
+        expired_signals = [
+            "cette offre a expiré",
+            "offre expirée",
+            "job expired",
+            "no longer accepting"
+        ]
+        content = response.text.lower()
+        return any(signal in content for signal in expired_signals)
+    except:
+        return False
+
 def score_all_offers():
     from utils.db import get_session, Offer
 
@@ -92,6 +107,12 @@ def score_all_offers():
 
     for offer in offers:
         logger.info(f"📊 Scoring : {offer.title} @ {offer.company}")
+         if is_offer_expired(offer.url):
+        logger.warning(f"⚠️ Offre expirée : {offer.title}")
+        offer.status = "expired"
+        session.commit()
+        continue
+        
         score, raison = score_offer({
             "title"   : offer.title,
             "company" : offer.company,
