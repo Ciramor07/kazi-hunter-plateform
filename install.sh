@@ -59,7 +59,7 @@ sudo systemctl start ollama
 sleep 3
 
 log "Téléchargement de Mistral 7B (~4GB)..."
-ollama pull mistral
+ollama pull phi3:mini
 ok "Mistral 7B prêt"
 
 # ── 4. Dossiers ───────────────────────────────
