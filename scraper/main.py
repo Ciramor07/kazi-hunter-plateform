@@ -1,4 +1,5 @@
 import os, hashlib
+import time
 from dotenv import load_dotenv
 from loguru import logger
 from utils.db import get_session, Offer
@@ -69,8 +70,9 @@ def main():
     logger.info(f"📦 Total brut : {len(all_offers)} offres")
     deduplicate_and_save(all_offers)
 
-    logger.info("🤖 Lancement du scoring IA...")
-    score_all_offers()
+    logger.info("🤖 Lancement du scoring IA dans 10s...")
+    time.sleep(10)
+    import time; time.sleep(30); score_all_offers()
 
 if __name__ == "__main__":
     main()
