@@ -1,4 +1,4 @@
-import os, requests, json
+import os, requests, json, time
 from loguru import logger
 from dotenv import load_dotenv
 
@@ -43,6 +43,24 @@ Critères de scoring :
 - 0-2  : Inadapté (trop senior, mauvais salaire, hors sujet)
 """
 
+def is_offer_expired(url: str) -> bool:
+    if not url:
+        return False
+    try:
+        response = requests.get(url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
+        expired_signals = [
+            "cette offre a expiré",
+            "offre expirée",
+            "job expired",
+            "no longer accepting",
+            "plus disponible",
+            "offre pourvue"
+        ]
+        content = response.text.lower()
+        return any(signal in content for signal in expired_signals)
+    except:
+        return False
+
 def score_offer(offer: dict) -> tuple[float, str]:
     prompt = PROMPT_TEMPLATE.format(
         profile  = PROFILE,
@@ -61,7 +79,7 @@ def score_offer(offer: dict) -> tuple[float, str]:
                 "prompt" : prompt,
                 "stream" : False,
             },
-            timeout=120
+            timeout=300
         )
         response.raise_for_status()
         raw = response.json().get("response", "")
@@ -82,21 +100,6 @@ def score_offer(offer: dict) -> tuple[float, str]:
         return 0.0, "Erreur scoring"
 
 
-# vérification expiration
-def is_offer_expired(url: str) -> bool:
-    try:
-        response = requests.get(url, timeout=10)
-        expired_signals = [
-            "cette offre a expiré",
-            "offre expirée",
-            "job expired",
-            "no longer accepting"
-        ]
-        content = response.text.lower()
-        return any(signal in content for signal in expired_signals)
-    except:
-        return False
-
 def score_all_offers():
     from utils.db import get_session, Offer
 
@@ -107,12 +110,13 @@ def score_all_offers():
 
     for offer in offers:
         logger.info(f"📊 Scoring : {offer.title} @ {offer.company}")
-         if is_offer_expired(offer.url):
-        logger.warning(f"⚠️ Offre expirée : {offer.title}")
-        offer.status = "expired"
-        session.commit()
-        continue
-        
+
+        if is_offer_expired(offer.url):
+            logger.warning(f"⚠️ Offre expirée : {offer.title}")
+            offer.status = "expired"
+            session.commit()
+            continue
+
         score, raison = score_offer({
             "title"   : offer.title,
             "company" : offer.company,
